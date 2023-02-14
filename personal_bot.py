@@ -1,6 +1,6 @@
 import openai
 import telegram
-from telegram.ext import CommandHandler, MessageHandler, Filters, Updater
+from telegram.ext import CommandHandler, MessageHandler, filters, Updater
 
 # Set up OpenAI API credentials
 openai.api_key = input("Enter API key: ")
