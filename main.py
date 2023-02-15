@@ -11,7 +11,8 @@ MODEL = "text-davinci-003"
 # Telegram secret access bot token
 BOT_TOKEN = input("Enter bot token: ")
 # Defining the bot's personality using adjectives
-BOT_PERSONALITY = "Answer in a Professional tone, "
+# BOT_PERSONALITY = "Answer in a Passionate tone, "
+BOT_PERSONALITY = ""
 # Specify your Chat Bot handle
 CHATBOT_HANDLE = input("Enter bot handle: ")
 
@@ -39,7 +40,7 @@ def openAI(prompt):
         "https://api.openai.com/v1/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
         json={"model": MODEL, "prompt": prompt, "temperature": 0.4, "max_tokens": 300},
-        timeout=10,
+        timeout=100,
     )
 
     result = response.json()
