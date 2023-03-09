@@ -26,6 +26,33 @@ def openAI(prompt):
     final_result = "".join(choice["text"] for choice in result["choices"])
     return final_result
 
+def generate_gpt_turbo(prompt):
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': API_KEY,
+    }
+
+    data = {
+        'model': 'gpt-3.5-turbo',
+        'prompt': prompt,
+        'max_tokens': 100,
+        'temperature': 0.5,
+        'n': 1,
+        'stop': '\n',
+    }
+
+    # Send a POST request to the API endpoint
+    response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=data)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response and return the generated text
+        response_json = json.loads(response.text)
+        return response_json['choices'][0]['text']
+    else:
+        # Handle errors
+        print(f'Request failed with status code {response.status_code}: {response.text}')
+
 def openAImage(prompt):
     # Make the request to the OpenAI API
     resp = requests.post(
@@ -56,6 +83,9 @@ async def on_message(message):
     msg = message.content
     if msg.startswith('$gpt_generate'):
         msg_headless = msg.replace('$gpt_generate', '')
+        await message.channel.send(f"{message.author.mention}" + generate_gpt_turbo(msg_headless))
+    elif msg.startswith('$davinci_generate'):
+        msg_headless = msg.replace('$davinci_generate', '')
         await message.channel.send(f"{message.author.mention}" + openAI(msg_headless))
     elif msg.startswith('$gpt_img'):
         msg_headless = msg.replace('$gpt_img', '')
