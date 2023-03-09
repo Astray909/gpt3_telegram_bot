@@ -27,19 +27,13 @@ def openAI(prompt):
     return final_result
 
 def generate_gpt_turbo(prompt):
-    headers={"Authorization": f"Bearer {API_KEY}"},
 
-    data = {
-        'model': 'gpt-3.5-turbo',
-        'prompt': prompt,
-        'max_tokens': 100,
-        'temperature': 0.5,
-        'n': 1,
-        'stop': '\n',
-    }
-
-    # Send a POST request to the API endpoint
-    response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=data)
+    response = requests.post(
+        "https://api.openai.com/v1/chat/completions",
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"model": "gpt-3.5-turbo", "prompt": prompt, "temperature": 0.5, "max_tokens": 300, "n": 1, "stop": "\n"},
+        timeout=100,
+    )
 
     # Check if the request was successful
     if response.status_code == 200:
