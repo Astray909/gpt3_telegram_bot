@@ -33,7 +33,7 @@ def generate_gpt_turbo(prompt):
     response = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"model": "gpt-3.5-turbo", "prompt": prompt, "temperature": 0.5, "max_tokens": 300, "n": 1, "stop": "\n"},
+        json={"model": "gpt-3.5-turbo", "prompt": prompt, "temperature": 0.5, "max_tokens": 300, "messages": 1, "stop": "\n"},
         timeout=100,
     )
 
@@ -41,7 +41,6 @@ def generate_gpt_turbo(prompt):
     if response.status_code == 200:
         # Parse the JSON response and return the generated text
         response_json = json.loads(response.text)
-        print(response_json)
         return response_json['choices'][0]['text']
     else:
         # Handle errors
