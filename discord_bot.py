@@ -41,6 +41,7 @@ def generate_gpt_turbo(prompt):
     if response.status_code == 200:
         # Parse the JSON response and return the generated text
         response_json = json.loads(response.text)
+        print(response_json)
         return response_json['choices'][0]['text']
     else:
         # Handle errors
