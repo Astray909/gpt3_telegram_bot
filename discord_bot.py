@@ -7,7 +7,8 @@ import random
 # OpenAI secret Key
 API_KEY = input("Enter API key: ")
 # Models: text-davinci-003,text-curie-001,text-babbage-001,text-ada-001
-MODEL = "text-davinci-003"
+# MODEL = "text-davinci-003"
+MODEL = "gpt-3.5-turbo"
 # Telegram secret access bot token
 BOT_TOKEN = input("Enter bot token: ")
 
