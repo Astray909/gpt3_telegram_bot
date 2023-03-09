@@ -7,16 +7,15 @@ import random
 # OpenAI secret Key
 API_KEY = input("Enter API key: ")
 # Models: text-davinci-003,text-curie-001,text-babbage-001,text-ada-001
-# MODEL = "text-davinci-003"
-MODEL = "gpt-3.5-turbo"
+MODEL = "text-davinci-003"
+# MODEL = "gpt-3.5-turbo"
 # Telegram secret access bot token
 BOT_TOKEN = input("Enter bot token: ")
 
 def openAI(prompt):
     # Make the request to the OpenAI API
     response = requests.post(
-        # "https://api.openai.com/v1/completions",
-        "https://api.openai.com/v1/chat/completions",
+        "https://api.openai.com/v1/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
         json={"model": MODEL, "prompt": prompt, "temperature": 0.4, "max_tokens": 300},
         timeout=100,
