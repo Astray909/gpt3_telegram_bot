@@ -15,7 +15,8 @@ BOT_TOKEN = input("Enter bot token: ")
 def openAI(prompt):
     # Make the request to the OpenAI API
     response = requests.post(
-        "https://api.openai.com/v1/completions",
+        # "https://api.openai.com/v1/completions",
+        "https://api.openai.com/v1/chat/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
         json={"model": MODEL, "prompt": prompt, "temperature": 0.4, "max_tokens": 300},
         timeout=100,
