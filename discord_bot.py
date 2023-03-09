@@ -27,6 +27,8 @@ def openAI(prompt):
     return final_result
 
 def generate_gpt_turbo(prompt):
+    if prompt is None:
+        raise ValueError("Prompt is not set.")
 
     response = requests.post(
         "https://api.openai.com/v1/chat/completions",
