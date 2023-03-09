@@ -29,7 +29,7 @@ def openAI(prompt):
 def generate_gpt_turbo(prompt):
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': API_KEY,
+        'Authorization': str(API_KEY),
     }
 
     data = {
