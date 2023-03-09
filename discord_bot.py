@@ -27,10 +27,7 @@ def openAI(prompt):
     return final_result
 
 def generate_gpt_turbo(prompt):
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': str(API_KEY),
-    }
+    headers={"Authorization": f"Bearer {API_KEY}"},
 
     data = {
         'model': 'gpt-3.5-turbo',
