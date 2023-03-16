@@ -15,25 +15,17 @@ def clear_conversation_history():
     conversation_history = []
 
 def openAI(prompt):
-    if prompt is None:
-        raise ValueError("Prompt is not set.")
-    
-    conversation_history.append({"role": "user", "content": prompt})
-    
-    messages = [{"role": "system", "content": "You are a helpful assistant."}]
-    messages.extend(conversation_history)
-    
+    # Make the request to the OpenAI API
     response = requests.post(
-        "https://api.openai.com/v1/chat/completions",
+        "https://api.openai.com/v1/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"model": MODEL, "messages": messages, "temperature": 0.4, "max_tokens": 300},
+        json={"model": MODEL, "prompt": prompt, "temperature": 0.4, "max_tokens": 300},
         timeout=100,
     )
 
     result = response.json()
     print(result)
     final_result = "".join(choice["text"] for choice in result["choices"])
-    conversation_history.append({"role": "assistant", "content": final_result})
     return final_result
 
 def generate_gpt_turbo(prompt):
