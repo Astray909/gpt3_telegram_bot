@@ -33,7 +33,7 @@ def generate_gpt_turbo(prompt):
     response = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"model": MODEL, "messages": [{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": prompt}], "temperature": 0.5, "max_tokens": 300},
+        json={"model": "gpt-4", "messages": [{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": prompt}], "temperature": 0.5, "max_tokens": 300},
         timeout=100,
     )
 
