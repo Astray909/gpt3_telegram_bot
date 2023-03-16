@@ -33,17 +33,14 @@ def generate_gpt_turbo(prompt):
     response = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"model": "gpt-3.5-turbo", "prompt": prompt, "temperature": 0.5, "max_tokens": 300},
+        json={"model": MODEL, "messages": [{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": prompt}], "temperature": 0.5, "max_tokens": 300},
         timeout=100,
     )
 
-    # Check if the request was successful
     if response.status_code == 200:
-        # Parse the JSON response and return the generated text
         response_json = json.loads(response.text)
-        return response_json['choices'][0]['text']
+        return response_json['choices'][0]['message']['content']
     else:
-        # Handle errors
         print(f'Request failed with status code {response.status_code}: {response.text}')
 
 def openAImage(prompt):
