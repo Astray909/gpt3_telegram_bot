@@ -4,13 +4,15 @@ import requests
 import json
 import random
 
-# OpenAI secret Key
 API_KEY = input("Enter API key: ")
-# Models: text-davinci-003,text-curie-001,text-babbage-001,text-ada-001
 MODEL = "text-davinci-003"
-# MODEL = "gpt-3.5-turbo"
-# Telegram secret access bot token
 BOT_TOKEN = input("Enter bot token: ")
+
+conversation_history = []
+
+def clear_conversation_history():
+    global conversation_history
+    conversation_history = []
 
 def openAI(prompt):
     # Make the request to the OpenAI API
@@ -30,16 +32,23 @@ def generate_gpt_turbo(prompt):
     if prompt is None:
         raise ValueError("Prompt is not set.")
 
+    conversation_history.append({"role": "user", "content": prompt})
+    
+    messages = [{"role": "system", "content": "You are a helpful assistant."}]
+    messages.extend(conversation_history)
+
     response = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"model": "gpt-3.5-turbo", "messages": [{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": prompt}], "temperature": 0.5, "max_tokens": 300},
+        json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": 300},
         timeout=100,
     )
 
     if response.status_code == 200:
         response_json = json.loads(response.text)
-        return response_json['choices'][0]['message']['content']
+        reply = response_json['choices'][0]['message']['content']
+        conversation_history.append({"role": "assistant", "content": reply})
+        return reply
     else:
         print(f'Request failed with status code {response.status_code}: {response.text}')
 
@@ -58,16 +67,12 @@ def openAImage(prompt):
 intents = discord.Intents().all()
 client = discord.Client(intents=intents)
 
-#first event :logging in
 @client.event
 async def on_ready():
     print("successful login as {0.user}".format(client))
- 
- 
-#second event: sending message
+
 @client.event
 async def on_message(message):
-    #check who sent the message
     if message.author == client.user:
         return
     msg = message.content
@@ -80,7 +85,8 @@ async def on_message(message):
     elif msg.startswith('$gpt_img'):
         msg_headless = msg.replace('$gpt_img', '')
         await message.channel.send(f"{message.author.mention}" + openAImage(msg_headless))
- 
- 
-#getting the secret token
+    elif msg.startswith('$clear_history'):
+        clear_conversation_history()
+        await message.channel.send("Conversation history cleared.")
+
 client.run(BOT_TOKEN)
