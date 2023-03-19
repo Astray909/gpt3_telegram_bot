@@ -1,8 +1,6 @@
-import os
 import discord
 import requests
 import json
-import random
 
 API_KEY = input("Enter API key: ")
 MODEL = "text-davinci-003"
@@ -78,7 +76,7 @@ async def on_message(message):
     msg = message.content
     if msg.startswith('$gpt_generate'):
         msg_headless = msg.replace('$gpt_generate', '')
-        await message.channel.send(f"{message.author.mention}" + generate_gpt_turbo(msg_headless))
+        await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless))
     elif msg.startswith('$davinci_generate'):
         msg_headless = msg.replace('$davinci_generate', '')
         await message.channel.send(f"{message.author.mention}" + openAI(msg_headless))
