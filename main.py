@@ -10,6 +10,8 @@ BOT_TOKEN = input("Enter bot token: ")
 
 conversation_histories = {}
 
+fallback_chat_id = "896410086"
+
 def clear_conversation_history(chat_id):
     global conversation_histories
     conversation_histories[chat_id] = []
@@ -26,9 +28,13 @@ def openAImage(prompt):
 
 CHATBOT_HANDLE = input("Enter bot handle: ")
 
-def generate_gpt_turbo(prompt, chat_id):
+def generate_gpt_turbo(prompt, chat_id=None):
     if prompt is None:
         raise ValueError("Prompt is not set.")
+
+    # Use the fallback chat_id if chat_id is not provided
+    if chat_id is None:
+        chat_id = fallback_chat_id
 
     if chat_id not in conversation_histories:
         conversation_histories[chat_id] = []
