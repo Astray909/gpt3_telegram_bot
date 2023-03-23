@@ -130,6 +130,7 @@ if __name__ == "__main__":
     while True:
         try:
             main()
+            break  # Exit the loop after successful execution
         except Exception as e:
             print(f"Bot crashed with error: {e}. Restarting...")
             time.sleep(5)  # Wait for 5 seconds before restarting
