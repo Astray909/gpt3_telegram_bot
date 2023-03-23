@@ -92,26 +92,27 @@ def Chatbot():
                     msg_id = str(int(result["message"]["message_id"]))
                     chat_id = str(result["message"]["chat"]["id"])
 
-                    if "/img" in result["message"]["text"]:
-                        prompt = result["message"]["text"].replace("/img", "")
-                        bot_response = openAImage(prompt)
-                        print(telegram_bot_sendimage(bot_response, chat_id, msg_id))
-
-                    if CHATBOT_HANDLE in result["message"]["text"]:
-                        prompt = result["message"]["text"].replace(CHATBOT_HANDLE, "")
-                        bot_response = generate_gpt_turbo(prompt)
-                        print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
-
-                    if "reply_to_message" in result["message"]:
-                        if result["message"]["reply_to_message"]["from"]["is_bot"]:
-                            prompt = result["message"]["text"]
-                            bot_response = generate_gpt_turbo(prompt)
-                            print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
-
                     if "/clear_history" in result["message"]["text"]:
                         clear_conversation_history()
                         bot_response = "Conversation history cleared."
                         print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
+
+                    else:
+                        if "/img" in result["message"]["text"]:
+                            prompt = result["message"]["text"].replace("/img", "")
+                            bot_response = openAImage(prompt)
+                            print(telegram_bot_sendimage(bot_response, chat_id, msg_id))
+
+                        if "/gpt_chat" in result["message"]["text"]:
+                            prompt = result["message"]["text"].replace("/gpt_chat", "")
+                            bot_response = generate_gpt_turbo(prompt)
+                            print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
+
+                        if "reply_to_message" in result["message"]:
+                            if result["message"]["reply_to_message"]["from"]["is_bot"]:
+                                prompt = result["message"]["text"]
+                                bot_response = generate_gpt_turbo(prompt)
+                                print(telegram_bot_sendtext(bot_response, chat_id, msg_id)) 
 
         except Exception as e:
             print(e)
