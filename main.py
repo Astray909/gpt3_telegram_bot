@@ -23,41 +23,35 @@ def generate_gpt_turbo(prompt):
     messages = [{"role": "system", "content": "You are a cheerful and quirky assistant."}]
     messages.extend(conversation_history)
 
-    response = requests.post(
-        "https://api.openai.com/v1/chat/completions",
-        headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": 300},
-        timeout=60,
-    )
+    try:
+        response = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={"Authorization": f"Bearer {API_KEY}"},
+            json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": 300},
+            timeout=60,
+        )
 
-    if response.status_code == 200:
-        response_json = json.loads(response.text)
-        reply = response_json['choices'][0]['message']['content']
-        conversation_history.append({"role": "assistant", "content": reply})
-        return reply
-    else:
-        print(f'Request failed with status code {response.status_code}: {response.text}')
-
-def openAImage(prompt):
-    resp = requests.post(
-        "https://api.openai.com/v1/images/generations",
-        headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"prompt": prompt, "n": 1, "size": "1024x1024"},
-        timeout=10,
-    )
-    response = json.loads(resp.text)
-    return response["data"][0]["url"]
-
-CHATBOT_HANDLE = input("Enter bot handle: ")
+        if response.status_code == 200:
+            response_json = json.loads(response.text)
+            reply = response_json['choices'][0]['message']['content']
+            conversation_history.append({"role": "assistant", "content": reply})
+            return reply
+        else:
+            print(f'Request failed with status code {response.status_code}: {response.text}')
+    except requests.exceptions.Timeout:
+        return "timeout, please try again in 30 seconds."
 
 def telegram_bot_sendtext(bot_message, chat_id, msg_id):
     data = {"chat_id": chat_id, "text": bot_message, "reply_to_message_id": msg_id}
-    response = requests.post(
-        "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage",
-        json=data,
-        timeout=5,
-    )
-    return response.json()
+    try:
+        response = requests.post(
+            "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage",
+            json=data,
+            timeout=5,
+        )
+        return response.json()
+    except requests.exceptions.Timeout:
+        return {"ok": False, "description": "timeout, please try again in 30 seconds."}
 
 def telegram_bot_sendimage(image_url, group_id, msg_id):
     data = {"chat_id": group_id, "photo": image_url, "reply_to_message_id": msg_id}
