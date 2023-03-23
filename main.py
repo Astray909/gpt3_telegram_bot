@@ -27,7 +27,7 @@ def generate_gpt_turbo(prompt):
         "https://api.openai.com/v1/chat/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
         json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": 300},
-        timeout=100,
+        timeout=30,
     )
 
     if response.status_code == 200:
