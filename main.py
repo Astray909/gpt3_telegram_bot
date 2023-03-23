@@ -20,7 +20,7 @@ def generate_gpt_turbo(prompt):
 
     conversation_history.append({"role": "user", "content": prompt})
     
-    messages = [{"role": "system", "content": "You are a helpful assistant."}]
+    messages = [{"role": "system", "content": "You are a cheerful and quirky assistant."}]
     messages.extend(conversation_history)
 
     response = requests.post(
