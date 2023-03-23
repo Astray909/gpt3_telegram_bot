@@ -6,11 +6,11 @@ API_KEY = input("Enter API key: ")
 MODEL = "text-davinci-003"
 BOT_TOKEN = input("Enter bot token: ")
 
-conversation_history = []
+conversation_histories = {}
 
-def clear_conversation_history():
-    global conversation_history
-    conversation_history = []
+def clear_conversation_history(user_id):
+    global conversation_histories
+    conversation_histories[user_id] = []
 
 def openAI(prompt):
     # Make the request to the OpenAI API
@@ -26,29 +26,37 @@ def openAI(prompt):
     final_result = "".join(choice["text"] for choice in result["choices"])
     return final_result
 
-def generate_gpt_turbo(prompt):
+def generate_gpt_turbo(prompt, user_id):
     if prompt is None:
         raise ValueError("Prompt is not set.")
 
-    conversation_history.append({"role": "user", "content": prompt})
+    if user_id not in conversation_histories:
+        conversation_histories[user_id] = []
+
+    conversation_histories[user_id].append({"role": "user", "content": prompt})
     
     messages = [{"role": "system", "content": "You are a helpful assistant."}]
-    messages.extend(conversation_history)
+    messages.extend(conversation_histories[user_id])
+    
+    try:
+        response = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={"Authorization": f"Bearer {API_KEY}"},
+            json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": 300},
+            timeout=60,
+        )
 
-    response = requests.post(
-        "https://api.openai.com/v1/chat/completions",
-        headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": 300},
-        timeout=100,
-    )
+        if response.status_code == 200:
+            response_json = json.loads(response.text)
+            reply = response_json['choices'][0]['message']['content']
+            conversation_histories[user_id].append({"role": "assistant", "content": reply})
+            return reply
+        else:
+            print(f'Request failed with status code {response.status_code}: {response.text}')
 
-    if response.status_code == 200:
-        response_json = json.loads(response.text)
-        reply = response_json['choices'][0]['message']['content']
-        conversation_history.append({"role": "assistant", "content": reply})
-        return reply
-    else:
-        print(f'Request failed with status code {response.status_code}: {response.text}')
+    except requests.exceptions.Timeout:
+        return "timeout, please try again in 30 seconds."
+
 
 def openAImage(prompt):
     # Make the request to the OpenAI API
@@ -74,9 +82,10 @@ async def on_message(message):
     if message.author == client.user:
         return
     msg = message.content
+    user_id = message.author.id
     if msg.startswith('$gpt_generate'):
         msg_headless = msg.replace('$gpt_generate', '')
-        await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless))
+        await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless, user_id))
     elif msg.startswith('$davinci_generate'):
         msg_headless = msg.replace('$davinci_generate', '')
         await message.channel.send(f"{message.author.mention}" + openAI(msg_headless))
@@ -84,7 +93,7 @@ async def on_message(message):
         msg_headless = msg.replace('$gpt_img', '')
         await message.channel.send(f"{message.author.mention}" + openAImage(msg_headless))
     elif msg.startswith('$clear_history'):
-        clear_conversation_history()
+        clear_conversation_history(user_id)
         await message.channel.send("Conversation history cleared.")
 
 client.run(BOT_TOKEN)
