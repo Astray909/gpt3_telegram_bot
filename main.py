@@ -14,6 +14,18 @@ def clear_conversation_history():
     global conversation_history
     conversation_history = []
 
+def openAImage(prompt):
+    resp = requests.post(
+        "https://api.openai.com/v1/images/generations",
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"prompt": prompt, "n": 1, "size": "1024x1024"},
+        timeout=10,
+    )
+    response = json.loads(resp.text)
+    return response["data"][0]["url"]
+
+CHATBOT_HANDLE = input("Enter bot handle: ")
+
 def generate_gpt_turbo(prompt):
     if prompt is None:
         raise ValueError("Prompt is not set.")
