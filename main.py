@@ -92,7 +92,7 @@ def Chatbot():
                     msg_id = str(int(result["message"]["message_id"]))
                     chat_id = str(result["message"]["chat"]["id"])
 
-                    if "/clear_history" in result["message"]["text"]:
+                    if "/clear_chat_history" in result["message"]["text"]:
                         clear_conversation_history()
                         bot_response = "Conversation history cleared."
                         print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
