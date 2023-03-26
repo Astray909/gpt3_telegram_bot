@@ -99,44 +99,47 @@ def Chatbot():
     data = json.loads(response.content)
     print(data)
 
-    for result in data["result"]:
-        try:
-            if float(result["update_id"]) > float(last_update):
-                if not result["message"]["from"]["is_bot"]:
-                    last_update = str(int(result["update_id"]))
+    if data["result"]:
+        for result in data["result"]:
+            try:
+                if float(result["update_id"]) > float(last_update):
+                    if not result["message"]["from"]["is_bot"]:
+                        last_update = str(int(result["update_id"]))
 
-                    msg_id = str(int(result["message"]["message_id"]))
-                    chat_id = str(result["message"]["chat"]["id"])
+                        msg_id = str(int(result["message"]["message_id"]))
+                        chat_id = str(result["message"]["chat"]["id"])
 
-                    if "/clear_chat_history" in result["message"]["text"]:
-                        clear_conversation_history(chat_id)
-                        bot_response = "Conversation history cleared."
-                        print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
-
-                    else:
-                        if "/img" in result["message"]["text"]:
-                            prompt = result["message"]["text"].replace("/img", "")
-                            bot_response = openAImage(prompt)
-                            print(telegram_bot_sendimage(bot_response, chat_id, msg_id))
-
-                        if "/gpt_chat" in result["message"]["text"]:
-                            prompt = result["message"]["text"].replace("/gpt_chat", "")
-                            bot_response = generate_gpt_turbo(prompt, chat_id)
+                        if "/clear_chat_history" in result["message"]["text"]:
+                            clear_conversation_history(chat_id)
+                            bot_response = "Conversation history cleared."
                             print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
 
-                        if "reply_to_message" in result["message"]:
-                            if result["message"]["reply_to_message"]["from"]["is_bot"]:
-                                prompt = result["message"]["text"]
+                        else:
+                            if "/img" in result["message"]["text"]:
+                                prompt = result["message"]["text"].replace("/img", "")
+                                bot_response = openAImage(prompt)
+                                print(telegram_bot_sendimage(bot_response, chat_id, msg_id))
+
+                            if "/gpt_chat" in result["message"]["text"]:
+                                prompt = result["message"]["text"].replace("/gpt_chat", "")
                                 bot_response = generate_gpt_turbo(prompt, chat_id)
                                 print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
 
-        except Exception as e:
-            print(e)
+                            if "reply_to_message" in result["message"]:
+                                if result["message"]["reply_to_message"]["from"]["is_bot"]:
+                                    prompt = result["message"]["text"]
+                                    bot_response = generate_gpt_turbo(prompt, chat_id)
+                                    print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
 
-    with open(filename, "w") as f:
-        f.write(last_update)
+            except Exception as e:
+                print(e)
 
-    return "done"
+        with open(filename, "w") as f:
+            f.write(last_update)
+
+        return "done"
+    else:
+        return "done"
 
 def main():
     timertime = 5
