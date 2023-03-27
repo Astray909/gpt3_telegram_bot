@@ -7,7 +7,7 @@ import time
 API_KEY = input("Enter API key: ")
 MODEL = "text-davinci-003"
 BOT_TOKEN = input("Enter bot token: ")
-MAX_TOKEN = input("Enter max token: ")
+MAX_TOKEN = int(input("Enter max token: "))
 
 conversation_histories = {}
 
