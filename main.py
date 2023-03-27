@@ -138,7 +138,7 @@ def Chatbot():
                             if "/davinci_generate" in result["message"]["text"]:
                                 prompt = result["message"]["text"].replace("/davinci_generate", "")
                                 bot_response = openAI(prompt)
-                                print(telegram_bot_sendimage(bot_response, chat_id, msg_id))
+                                print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
 
                             if "/gpt_chat" in result["message"]["text"]:
                                 prompt = result["message"]["text"].replace("/gpt_chat", "")
