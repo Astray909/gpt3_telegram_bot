@@ -134,6 +134,11 @@ def Chatbot():
                                 prompt = result["message"]["text"].replace("/img", "")
                                 bot_response = openAImage(prompt)
                                 print(telegram_bot_sendimage(bot_response, chat_id, msg_id))
+                            
+                            if "/davinci_generate" in result["message"]["text"]:
+                                prompt = result["message"]["text"].replace("/davinci_generate", "")
+                                bot_response = openAI(prompt)
+                                print(telegram_bot_sendimage(bot_response, chat_id, msg_id))
 
                             if "/gpt_chat" in result["message"]["text"]:
                                 prompt = result["message"]["text"].replace("/gpt_chat", "")
@@ -144,12 +149,6 @@ def Chatbot():
                                 if result["message"]["reply_to_message"]["from"]["is_bot"]:
                                     prompt = result["message"]["text"]
                                     bot_response = generate_gpt_turbo(prompt, chat_id)
-                                    print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
-                            
-                            if "/davinci_generate" in result["message"]["text"]:
-                                if result["message"]["reply_to_message"]["from"]["is_bot"]:
-                                    prompt = result["message"]["text"]
-                                    bot_response = openAI(prompt)
                                     print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
 
             except Exception as e:
