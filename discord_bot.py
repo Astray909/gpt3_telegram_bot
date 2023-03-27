@@ -5,6 +5,7 @@ import json
 API_KEY = input("Enter API key: ")
 MODEL = "text-davinci-003"
 BOT_TOKEN = input("Enter bot token: ")
+MAX_TOKEN = input("Enter max token: ")
 
 conversation_histories = {}
 
@@ -17,7 +18,7 @@ def openAI(prompt):
     response = requests.post(
         "https://api.openai.com/v1/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"model": MODEL, "prompt": prompt, "temperature": 0.4, "max_tokens": 300},
+        json={"model": MODEL, "prompt": prompt, "temperature": 0.4, "max_tokens": MAX_TOKEN},
         timeout=100,
     )
 
@@ -42,7 +43,7 @@ def generate_gpt_turbo(prompt, user_id):
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
             headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": 300},
+            json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": MAX_TOKEN},
             timeout=60,
         )
 

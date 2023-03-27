@@ -7,6 +7,7 @@ import time
 API_KEY = input("Enter API key: ")
 MODEL = "text-davinci-003"
 BOT_TOKEN = input("Enter bot token: ")
+MAX_TOKEN = input("Enter max token: ")
 
 conversation_histories = {}
 
@@ -28,6 +29,20 @@ def openAImage(prompt):
 
 CHATBOT_HANDLE = input("Enter bot handle: ")
 
+def openAI(prompt):
+    # Make the request to the OpenAI API
+    response = requests.post(
+        "https://api.openai.com/v1/completions",
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"model": MODEL, "prompt": prompt, "temperature": 0.4, "max_tokens": MAX_TOKEN},
+        timeout=100,
+    )
+
+    result = response.json()
+    print(result)
+    final_result = "".join(choice["text"] for choice in result["choices"])
+    return final_result
+
 def generate_gpt_turbo(prompt, chat_id=None):
     if prompt is None:
         raise ValueError("Prompt is not set.")
@@ -48,7 +63,7 @@ def generate_gpt_turbo(prompt, chat_id=None):
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
             headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": 300},
+            json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": MAX_TOKEN},
             timeout=60,
         )
 
@@ -99,7 +114,7 @@ def Chatbot():
     data = json.loads(response.content)
     print(data)
 
-    if data["result"]:
+    try:
         for result in data["result"]:
             try:
                 if float(result["update_id"]) > float(last_update):
@@ -130,6 +145,12 @@ def Chatbot():
                                     prompt = result["message"]["text"]
                                     bot_response = generate_gpt_turbo(prompt, chat_id)
                                     print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
+                            
+                            if "/davinci_generate" in result["message"]["text"]:
+                                if result["message"]["reply_to_message"]["from"]["is_bot"]:
+                                    prompt = result["message"]["text"]
+                                    bot_response = openAI(prompt)
+                                    print(telegram_bot_sendtext(bot_response, chat_id, msg_id))
 
             except Exception as e:
                 print(e)
@@ -138,7 +159,8 @@ def Chatbot():
             f.write(last_update)
 
         return "done"
-    else:
+    except KeyError:
+        print("KeyError: 'result' not found in data")
         return "done"
 
 def main():
