@@ -1,6 +1,8 @@
 import discord
 import requests
 import json
+from PyPDF2 import PdfFileReader
+import io
 
 API_KEY = input("Enter API key: ")
 MODEL = "text-davinci-003"
@@ -24,6 +26,27 @@ def openAI(prompt):
 
     result = response.json()
     print(result)
+    final_result = "".join(choice["text"] for choice in result["choices"])
+    return final_result
+
+def read_pdf(file):
+    pdf = PdfFileReader(file)
+    text = ''
+    for page in range(pdf.getNumPages()):
+        text += pdf.getPage(page).extractText()
+    return text
+
+def summarize_with_gpt3(text):
+    prompt = f"My task is to summarize the following text:\n\n{text}\n\nSummary:"
+
+    response = requests.post(
+        "https://api.openai.com/v1/engines/davinci-codex/completions",
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"model": MODEL, "prompt": prompt, "temperature": 0.2, "max_tokens": MAX_TOKEN},
+        timeout=100,
+    )
+
+    result = response.json()
     final_result = "".join(choice["text"] for choice in result["choices"])
     return final_result
 
@@ -87,6 +110,12 @@ async def on_message(message):
     if msg.startswith('$gpt_generate'):
         msg_headless = msg.replace('$gpt_generate', '')
         await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless, user_id))
+    elif message.content.startswith('$gpt_pdf') and message.attachments:
+        file = await message.attachments[0].read(use_cached=False)
+        text = read_pdf(io.BytesIO(file))
+        paragraphs = text.split('\n')
+        summary = '\n'.join(summarize_with_gpt3(paragraph) for paragraph in paragraphs)
+        await message.channel.send(f"{message.author.mention}\n" + summary)
     elif msg.startswith('$davinci_generate'):
         msg_headless = msg.replace('$davinci_generate', '')
         await message.channel.send(f"{message.author.mention}" + openAI(msg_headless))
