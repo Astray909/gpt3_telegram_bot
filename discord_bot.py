@@ -33,7 +33,7 @@ def read_pdf(file):
     pdf = PdfReader(file)
     text = ''
     for page in range(len(pdf.pages)):
-        text += pdf.pages[page].extractText()
+        text += pdf.pages[page].extract_text()
     return text
 
 def summarize_with_gpt3(text):
