@@ -1,7 +1,7 @@
 import discord
 import requests
 import json
-from PyPDF2 import PdfFileReader
+from PyPDF2 import PdfReader
 import io
 
 API_KEY = input("Enter API key: ")
@@ -30,7 +30,7 @@ def openAI(prompt):
     return final_result
 
 def read_pdf(file):
-    pdf = PdfFileReader(file)
+    pdf = PdfReader(file)
     text = ''
     for page in range(pdf.getNumPages()):
         text += pdf.getPage(page).extractText()
