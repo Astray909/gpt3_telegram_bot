@@ -113,6 +113,7 @@ async def on_message(message):
     elif message.content.startswith('$gpt_pdf') and message.attachments:
         file = await message.attachments[0].read(use_cached=False)
         text = read_pdf(io.BytesIO(file))
+        print(text)
         paragraphs = text.split('\n')
         summary = '\n'.join(summarize_with_gpt3(paragraph) for paragraph in paragraphs)
         await message.channel.send(f"{message.author.mention}\n" + summary)
