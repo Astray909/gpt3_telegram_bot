@@ -32,7 +32,7 @@ def openAI(prompt):
 def read_pdf(file):
     pdf = PdfReader(file)
     text = ''
-    for page in range(pdf.getNumPages()):
+    for page in range(len(pdf.pages)):
         text += pdf.getPage(page).extractText()
     return text
 
