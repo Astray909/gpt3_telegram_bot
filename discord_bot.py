@@ -40,7 +40,7 @@ def summarize_with_gpt3(text):
     prompt = f"My task is to summarize the following text:\n\n{text}\n\nSummary:"
 
     response = requests.post(
-        "https://api.openai.com/v1/engines/davinci-codex/completions",
+        "https://api.openai.com/v1/completions",
         headers={"Authorization": f"Bearer {API_KEY}"},
         json={"model": MODEL, "prompt": prompt, "temperature": 0.2, "max_tokens": MAX_TOKEN},
         timeout=100,
