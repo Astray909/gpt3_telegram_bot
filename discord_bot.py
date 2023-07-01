@@ -111,15 +111,18 @@ async def on_message(message):
         msg_headless = msg.replace('$gpt_generate', '')
         await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless, user_id))
     elif message.content.startswith('$gpt_pdf') and message.attachments:
-        file = await message.attachments[0].read(use_cached=False)
-        pages = read_pdf(io.BytesIO(file))
-        print(pages)
-        await message.channel.send(f"{message.author.mention}\nSummary Beginning:\n")
-        for page in pages:
-            if page.strip():  # Ensure the page is not just whitespace
-                summary = summarize_with_gpt3(page)
-                await message.channel.send(f"{message.author.mention}" + summary)
-        await message.channel.send(f"{message.author.mention}\nSummary Finished\n")
+        if message.attachments[0]:
+            file = await message.attachments[0].read(use_cached=False)
+            pages = read_pdf(io.BytesIO(file))
+            print(pages)
+            await message.channel.send(f"{message.author.mention}\nSummary Beginning:\n")
+            for page in pages:
+                if page.strip():  # Ensure the page is not just whitespace
+                    summary = summarize_with_gpt3(page)
+                    await message.channel.send(f"{message.author.mention}" + summary)
+            await message.channel.send(f"{message.author.mention}\nSummary Finished\n")
+        else:
+            await message.channel.send(f"{message.author.mention}\nPlease Include Attachment and try again.\n")
     elif msg.startswith('$davinci_generate'):
         msg_headless = msg.replace('$davinci_generate', '')
         await message.channel.send(f"{message.author.mention}" + openAI(msg_headless))
