@@ -115,6 +115,7 @@ async def on_message(message):
         text = read_pdf(io.BytesIO(file))
         print(text)
         paragraphs = text.split('\n')
+        print(paragraphs)
         summary = '\n'.join(summarize_with_gpt3(paragraph) for paragraph in paragraphs)
         await message.channel.send(f"{message.author.mention}\n" + summary)
     elif msg.startswith('$davinci_generate'):
