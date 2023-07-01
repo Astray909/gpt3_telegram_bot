@@ -31,10 +31,10 @@ def openAI(prompt):
 
 def read_pdf(file):
     pdf = PdfReader(file)
-    text = ''
+    pages = []
     for page in range(len(pdf.pages)):
-        text += pdf.pages[page].extract_text()
-    return text
+        pages.append(pdf.pages[page].extract_text())
+    return pages
 
 def summarize_with_gpt3(text):
     prompt = f"My task is to summarize the following text:\n\n{text}\n\nSummary:"
@@ -112,23 +112,13 @@ async def on_message(message):
         await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless, user_id))
     elif message.content.startswith('$gpt_pdf') and message.attachments:
         file = await message.attachments[0].read(use_cached=False)
-        text = read_pdf(io.BytesIO(file))
-        print(text)
-        
-        paragraphs = text.split('\n')
-
-        # Split paragraphs into pages, where each page is a list of paragraphs
-        paragraphs_per_page = 50  # Adjust this number based on the number of paragraphs you want per page
-        pages = [paragraphs[i:i + paragraphs_per_page] for i in range(0, len(paragraphs), paragraphs_per_page)]
-
+        pages = read_pdf(io.BytesIO(file))
+        print(pages)
         await message.channel.send(f"{message.author.mention}\nSummary Beginning:\n")
-        
         for page in pages:
-            for paragraph in page:
-                if paragraph.strip():  # Ensure the paragraph is not just whitespace
-                    summary = summarize_with_gpt3(paragraph)
-                    await message.channel.send(f"{message.author.mention}" + summary)
-                    
+            if page.strip():  # Ensure the page is not just whitespace
+                summary = summarize_with_gpt3(page)
+                await message.channel.send(f"{message.author.mention}" + summary)
         await message.channel.send(f"{message.author.mention}\nSummary Finished\n")
     elif msg.startswith('$davinci_generate'):
         msg_headless = msg.replace('$davinci_generate', '')
