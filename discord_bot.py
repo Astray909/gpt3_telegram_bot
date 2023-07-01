@@ -114,12 +114,21 @@ async def on_message(message):
         file = await message.attachments[0].read(use_cached=False)
         text = read_pdf(io.BytesIO(file))
         print(text)
+        
         paragraphs = text.split('\n')
+
+        # Split paragraphs into pages, where each page is a list of paragraphs
+        paragraphs_per_page = 50  # Adjust this number based on the number of paragraphs you want per page
+        pages = [paragraphs[i:i + paragraphs_per_page] for i in range(0, len(paragraphs), paragraphs_per_page)]
+
         await message.channel.send(f"{message.author.mention}\nSummary Beginning:\n")
-        for paragraph in paragraphs:
-            if paragraph.strip():  # Ensure the paragraph is not just whitespace
-                summary = summarize_with_gpt3(paragraph)
-                await message.channel.send(f"{message.author.mention}" + summary)
+        
+        for page in pages:
+            for paragraph in page:
+                if paragraph.strip():  # Ensure the paragraph is not just whitespace
+                    summary = summarize_with_gpt3(paragraph)
+                    await message.channel.send(f"{message.author.mention}" + summary)
+                    
         await message.channel.send(f"{message.author.mention}\nSummary Finished\n")
     elif msg.startswith('$davinci_generate'):
         msg_headless = msg.replace('$davinci_generate', '')
