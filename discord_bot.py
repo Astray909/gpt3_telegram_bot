@@ -115,9 +115,12 @@ async def on_message(message):
         text = read_pdf(io.BytesIO(file))
         print(text)
         paragraphs = text.split('\n')
-        print(paragraphs)
-        summary = '\n'.join(summarize_with_gpt3(paragraph) for paragraph in paragraphs)
-        await message.channel.send(f"{message.author.mention}\n" + summary)
+        await message.channel.send(f"{message.author.mention}\nSummary Beginning:\n")
+        for paragraph in paragraphs:
+            if paragraph.strip():  # Ensure the paragraph is not just whitespace
+                summary = summarize_with_gpt3(paragraph)
+                await message.channel.send(f"{message.author.mention}" + summary)
+        await message.channel.send(f"{message.author.mention}\nSummary Finished\n")
     elif msg.startswith('$davinci_generate'):
         msg_headless = msg.replace('$davinci_generate', '')
         await message.channel.send(f"{message.author.mention}" + openAI(msg_headless))
