@@ -115,12 +115,17 @@ async def on_message(message):
             file = await message.attachments[0].read(use_cached=False)
             pages = read_pdf(io.BytesIO(file))
             print(pages)
+            summaries = []
             await message.channel.send(f"{message.author.mention}\nSummary Beginning:\n")
             for page in pages:
                 if page.strip():  # Ensure the page is not just whitespace
                     summary = summarize_with_gpt3(page)
+                    summaries.append(summary)
                     await message.channel.send(f"{message.author.mention}" + summary)
+            with open("summary.txt", "w") as f:
+                f.write("\n".join(summaries))
             await message.channel.send(f"{message.author.mention}\nSummary Finished\n")
+            await message.channel.send(file=discord.File("summary.txt"))
         else:
             await message.channel.send(f"{message.author.mention}\nPlease Include Attachment and try again.\n")
     elif msg.startswith('$davinci_generate'):
