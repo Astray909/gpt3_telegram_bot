@@ -66,7 +66,7 @@ def generate_gpt_turbo(prompt, user_id):
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
             headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"model": "gpt-4", "messages": messages, "temperature": 0.5, "max_tokens": MAX_TOKEN},
+            json={"model": "gpt-3.5-turbo", "messages": messages, "temperature": 0.5, "max_tokens": MAX_TOKEN},
             timeout=60,
         )
 
