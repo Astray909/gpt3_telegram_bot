@@ -121,7 +121,7 @@ async def on_message(message):
         global last_request_time
 
         # Check if a request has been made in the last minute
-        if last_request_time is not None and time.time() - last_request_time < 60:
+        if last_request_time is not None and time.time() - last_request_time < 20:
             await message.channel.send("Rate limit exceeded. Please wait for a minute before making another request.")
 
         # Update the time of the last request
