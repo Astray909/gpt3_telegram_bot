@@ -3,6 +3,9 @@ import requests
 import json
 from PyPDF2 import PdfReader
 import io
+import time
+
+last_request_time = None
 
 API_KEY = input("Enter API key: ")
 MODEL = "text-davinci-003"
@@ -115,6 +118,15 @@ async def on_message(message):
         msg_headless = msg.replace('$gpt_generate', '')
         await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless, user_id, 3))
     elif msg.startswith('$gpt4_generate'):
+        global last_request_time
+
+        # Check if a request has been made in the last minute
+        if last_request_time is not None and time.time() - last_request_time < 60:
+            await message.channel.send("Rate limit exceeded. Please wait for a minute before making another request.")
+
+        # Update the time of the last request
+        last_request_time = time.time()
+
         msg_headless = msg.replace('$gpt4_generate', '')
         await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless, user_id, 4))
     elif message.content.startswith('$gpt_pdf') and message.attachments:
