@@ -50,7 +50,11 @@ def summarize_with_gpt3(text):
     final_result = "".join(choice["text"] for choice in result["choices"])
     return final_result
 
-def generate_gpt_turbo(prompt, user_id):
+def generate_gpt_turbo(prompt, user_id, gpt_model):
+    if gpt_model == 3:
+        chosen_model = "gpt-3.5-turbo"
+    elif gpt_model == 4:
+        chosen_model = "gpt-4"
     if prompt is None:
         raise ValueError("Prompt is not set.")
 
@@ -109,7 +113,10 @@ async def on_message(message):
     user_id = message.author.id
     if msg.startswith('$gpt_generate'):
         msg_headless = msg.replace('$gpt_generate', '')
-        await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless, user_id))
+        await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless, user_id, 3))
+    elif msg.startswith('$gpt4_generate'):
+        msg_headless = msg.replace('$gpt4_generate', '')
+        await message.channel.send(f"{message.author.mention}\n" + generate_gpt_turbo(msg_headless, user_id, 4))
     elif message.content.startswith('$gpt_pdf') and message.attachments:
         if message.attachments[0]:
             file = await message.attachments[0].read(use_cached=False)
